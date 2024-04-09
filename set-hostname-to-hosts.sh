@@ -49,6 +49,10 @@ function create_backup_dir() {
 
 # Backup the /etc/hosts file function
 backup_hosts_file() {
+
+    # Check if the backup directory exists
+    create_backup_dir
+
     # Backup the /etc/hosts file
     echo -e "Backing up the /etc/hosts file to $backup_file"
     cp /etc/hosts $backup_file
