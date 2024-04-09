@@ -45,7 +45,7 @@ function create_backup_dir() {
 }
 
 # Backup the /etc/hosts file function
-backup_hosts_file() {
+function backup_hosts_file() {
 
     # Define the backup file path with current date and time
     local backup_file="$backup_dir/hosts_backup_$(date +'%Y%m%d_%H%M%S')"
@@ -56,6 +56,20 @@ backup_hosts_file() {
     # Backup the /etc/hosts file
     echo -e "Backing up the /etc/hosts file to $backup_file"
     cp /etc/hosts $backup_file
+}
+
+# Function remove double entries
+function remove_double_entries() {
+    
+    if awk '!seen[$0]++' /etc/hosts | grep -qE "127.0.0.1|127.0.1.1"; then
+        # Remove double entries from the /etc/hosts file
+        echo -e "Removing double entries from the /etc/hosts file"
+        backup_hosts_file
+        
+        # If double entries are found, remove them
+        awk '!seen[$0]++' /etc/hosts > /etc/hosts.tmp && mv /etc/hosts.tmp /etc/hosts
+        changes_made=true
+    fi
 }
 
 # Check if the entry already exists in the /etc/hosts file
@@ -86,6 +100,9 @@ if ! grep -q "^127.0.1.1" /etc/hosts; then
     sed -i "/^127.0.0.1/a $new_entry" /etc/hosts
     changes_made=true
 fi
+
+# Remove double entries from the /etc/hosts file
+remove_double_entries
 
 # Check if changes were made
 if [ "$changes_made" = "true" ]; then
