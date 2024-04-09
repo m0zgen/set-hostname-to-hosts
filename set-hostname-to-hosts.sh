@@ -9,6 +9,9 @@ SCRIPT_PATH=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd); cd $SCRIPT_PATH
 # Variables
 # -------------------------------------------------------------------------------------------\
 
+# Define the user's home directory
+user_home=$(eval echo "~$(whoami)")
+
 # Get the hostname from the /etc/hostname file
 hostname=$(cat /etc/hostname)
 
@@ -21,18 +24,29 @@ standard_entry="127.0.0.1\tlocalhost"
 # Create a new entry to add to the /etc/hosts file
 new_entry="127.0.1.1\t$hostname $first_octet"
 
+# Define the backup file path with current date and time
+backup_file="$user_home/hosts_backup_$(date +'%Y%m%d_%H%M%S')"
+
 # Bool variable if changes are made
 changes_made=false
 
 # Main
 # -------------------------------------------------------------------------------------------\
 
-echo -e "Processing the /etc/hosts file...\n"
+echo -e "\nProcessing the /etc/hosts file...\n"
+
+# Backup the /etc/hosts file function
+backup_hosts_file() {
+    # Backup the /etc/hosts file
+    echo -e "Backing up the /etc/hosts file to $backup_file"
+    cp /etc/hosts $backup_file
+}
 
 # Check if the entry already exists in the /etc/hosts file
 if ! grep -q "^127.0.0.1" /etc/hosts; then
     # Add as first line the standard entry to the /etc/hosts file
     echo -e "127.0.0.1 not found in /etc/hosts file, adding it now"
+    backup_hosts_file
     sed -i "1i 127.0.0.1\tlocalhost" /etc/hosts
     changes_made=true
 fi
@@ -40,7 +54,9 @@ fi
 # Check if the entry already exists in the /etc/hosts file
 if grep -q "^127.0.1.1" /etc/hosts; then
     # Remove the entry from the /etc/hosts file
+    echo -e "Found 127.0.1.1 entry in /etc/hosts file. Removing..."
     echo -e "Removing the old 127.0.1.1 entry from /etc/hosts file"
+    backup_hosts_file
     sed -i "/^127.0.1.1/d" /etc/hosts
     changes_made=true
 fi
@@ -50,6 +66,7 @@ fi
 if ! grep -q "^127.0.1.1" /etc/hosts; then
     # Add the new entry to the /etc/hosts file
     echo -e "Adding the new entry: $new_entry to /etc/hosts file after the standard entry"
+    backup_hosts_file
     sed -i "/^127.0.0.1/a $new_entry" /etc/hosts
     changes_made=true
 fi
@@ -57,8 +74,10 @@ fi
 # Check if changes were made
 if [ "$changes_made" = "true" ]; then
     # Print the changes made
-    echo -e "\nChanges made to the /etc/hosts file:"
+    echo -e "\nChanges made to the /etc/hosts file:\n"
     cat /etc/hosts
+
+    echo -e "\nBackup of the /etc/hosts file was created at $backup_file"
 else
     # Print that no changes were made
     echo -e "\nNo changes were made to the /etc/hosts file"
