@@ -27,6 +27,8 @@ changes_made=false
 # Main
 # -------------------------------------------------------------------------------------------\
 
+echo -e "Processing the /etc/hosts file...\n"
+
 # Check if the entry already exists in the /etc/hosts file
 if ! grep -q "^127.0.0.1" /etc/hosts; then
     # Add as first line the standard entry to the /etc/hosts file
@@ -55,9 +57,9 @@ fi
 # Check if changes were made
 if [ "$changes_made" = "true" ]; then
     # Print the changes made
-    echo -e "Changes made to the /etc/hosts file:"
+    echo -e "\nChanges made to the /etc/hosts file:"
     cat /etc/hosts
 else
     # Print that no changes were made
-    echo -e "No changes were made to the /etc/hosts file"
+    echo -e "\nNo changes were made to the /etc/hosts file"
 fi
