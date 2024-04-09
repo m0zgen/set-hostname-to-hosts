@@ -49,7 +49,7 @@ backup_hosts_file() {
 
     # Define the backup file path with current date and time
     local backup_file="$backup_dir/hosts_backup_$(date +'%Y%m%d_%H%M%S')"
-
+    sleep 1
     # Check if the backup directory exists
     create_backup_dir
 
