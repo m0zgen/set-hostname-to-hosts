@@ -27,9 +27,6 @@ new_entry="127.0.1.1\t$hostname $first_octet"
 # Backup directory path
 backup_dir="$SCRIPT_PATH/hosts_backup"
 
-# Define the backup file path with current date and time
-backup_file="$backup_dir/hosts_backup_$(date +'%Y%m%d_%H%M%S')"
-
 # Bool variable if changes are made
 changes_made=false
 
@@ -49,6 +46,9 @@ function create_backup_dir() {
 
 # Backup the /etc/hosts file function
 backup_hosts_file() {
+
+    # Define the backup file path with current date and time
+    local backup_file="$backup_dir/hosts_backup_$(date +'%Y%m%d_%H%M%S')"
 
     # Check if the backup directory exists
     create_backup_dir
