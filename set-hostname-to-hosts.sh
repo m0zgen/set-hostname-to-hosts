@@ -93,7 +93,7 @@ if [ "$changes_made" = "true" ]; then
     echo -e "\nChanges made to the /etc/hosts file:\n"
     cat /etc/hosts
 
-    echo -e "\nBackup of the /etc/hosts file was created at $backup_file"
+    echo -e "\nBackup of the /etc/hosts file was created in $backup_dir\n"
 else
     # Print that no changes were made
     echo -e "\nNo changes were made to the /etc/hosts file"
