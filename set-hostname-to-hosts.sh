@@ -24,8 +24,11 @@ standard_entry="127.0.0.1\tlocalhost"
 # Create a new entry to add to the /etc/hosts file
 new_entry="127.0.1.1\t$hostname $first_octet"
 
+# Backup directory path
+backup_dir="$SCRIPT_PATH/hosts_backup"
+
 # Define the backup file path with current date and time
-backup_file="$user_home/hosts_backup_$(date +'%Y%m%d_%H%M%S')"
+backup_file="$backup_dir/hosts_backup_$(date +'%Y%m%d_%H%M%S')"
 
 # Bool variable if changes are made
 changes_made=false
@@ -34,6 +37,15 @@ changes_made=false
 # -------------------------------------------------------------------------------------------\
 
 echo -e "\nProcessing the /etc/hosts file...\n"
+
+# Function create backup dir in script dir
+function create_backup_dir() {
+    # Create the backup directory if it doesn't exist
+    if [ ! -d "$backup_dir" ]; then
+        echo -e "Creating the backup directory at $user_home/hosts_backup"
+        mkdir $backup_dir
+    fi
+}
 
 # Backup the /etc/hosts file function
 backup_hosts_file() {
